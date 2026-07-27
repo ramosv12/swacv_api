@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("swacv_api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+87f2a2f1584210d5525ed68aa2c3e33191ec7d88")]
 [assembly: System.Reflection.AssemblyProductAttribute("swacv_api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("swacv_api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
