@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\swacv_api.props" />
-</Project>
