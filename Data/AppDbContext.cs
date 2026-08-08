@@ -11,6 +11,7 @@ namespace swacv_api.Data
         public DbSet<Equipo> Equipos { get; set; }
         public DbSet<Empleado> Empleados { get; set; }
         public DbSet<Vacaciones> Vacaciones { get; set; }
+        public DbSet<Lider> Lideres { get; set; }
 
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -18,6 +19,7 @@ namespace swacv_api.Data
             modelBuilder.Entity<Empleado>().ToTable("empleado");
             modelBuilder.Entity<Usuario>().ToTable("usuario");
             modelBuilder.Entity<Equipo>().ToTable("equipo");
+            modelBuilder.Entity<Lider>().ToTable("lider");
         }
     }
 }

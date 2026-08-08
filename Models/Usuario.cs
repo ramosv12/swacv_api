@@ -11,18 +11,18 @@ public class Usuario
     public int IdUsuario { get; set; }
 
     [Column("clave")]
-    public string Clave { get; set; }
+    public string Clave { get; set; } = string.Empty;
 
     [Column("nombres")]
-    public string Nombres { get; set; }
+    public string Nombres { get; set; } = string.Empty;
 
     [Column("apellidos")]
-    public string Apellidos { get; set; }
+    public string Apellidos { get; set; } = string.Empty;
 
     [Column("email")]
-    public string Email { get; set; }
+    public string Email { get; set; } = string.Empty;
 
     [Column("identificadorusuario")]
-    public string IdentificadorUsuario { get; set; }
+    public string IdentificadorUsuario { get; set; } = string.Empty;
 }
 }
