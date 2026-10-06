@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using swacv_api.Data;
 using swacv_api.Models;
+using swacv_api.DTOs;
 
 namespace swacv_api.Controllers
 {
@@ -16,6 +17,35 @@ namespace swacv_api.Controllers
         public VacacionesController(AppDbContext context)
         {
             _context = context;
+        }
+        private static int CalcularDiasLaborales(
+            DateTime fechaInicio,
+            DateTime fechaFin)
+        {
+            // Validar que la fecha final no sea menor que la inicial
+            if (fechaFin.Date < fechaInicio.Date)
+            {
+                return 0;
+            }
+
+            int dias = 0;
+
+            for (
+                DateTime fecha = fechaInicio.Date;
+                fecha <= fechaFin.Date;
+                fecha = fecha.AddDays(1)
+            )
+            {
+                if (
+                    fecha.DayOfWeek != DayOfWeek.Saturday &&
+                    fecha.DayOfWeek != DayOfWeek.Sunday
+                )
+                {
+                    dias++;
+                }
+            }
+
+            return dias;
         }
 
         [HttpGet]
@@ -58,6 +88,70 @@ namespace swacv_api.Controllers
                 .ToList();
 
             return Ok(vacaciones);
+        }
+
+        [HttpGet("planificacion-lider/{idLider}")]
+        public IActionResult GetPlanificacionLider(int idLider)
+        {
+            var datos = (
+                from vacacion in _context.Vacaciones
+
+                join empleado in _context.Empleados
+                    on vacacion.IdEmpleado equals empleado.IdEmpleado
+
+                join usuario in _context.Usuarios
+                    on empleado.IdUsuario equals usuario.IdUsuario
+
+                where vacacion.IdLider == idLider
+
+                orderby vacacion.FechaInicio
+
+                select new
+                {
+                    vacacion.IdVacacion,
+                    vacacion.IdEmpleado,
+
+                    usuario.Nombres,
+                    usuario.Apellidos,
+                    usuario.Email,
+
+                    vacacion.FechaInicio,
+                    vacacion.FechaFin,
+
+                    vacacion.Comentarios,
+                    vacacion.Estatus
+                }
+            ).ToList();
+
+            var resultado = datos
+                .Select(x => new PlanificacionLiderDto
+                {
+                    IdVacacion = x.IdVacacion,
+
+                    IdEmpleado = x.IdEmpleado,
+
+                    Nombres = x.Nombres,
+
+                    Apellidos = x.Apellidos,
+
+                    Correo = x.Email,
+
+                    FechaInicio = x.FechaInicio,
+
+                    FechaFin = x.FechaFin,
+
+                    Dias = CalcularDiasLaborales(
+                        x.FechaInicio,
+                        x.FechaFin
+                    ),
+
+                    Comentarios = x.Comentarios,
+
+                    Estatus = x.Estatus
+                })
+                .ToList();
+
+            return Ok(resultado);
         }
 
         [HttpPost]
@@ -110,5 +204,6 @@ namespace swacv_api.Controllers
                 );
             }
         }
+        
     }
 }
