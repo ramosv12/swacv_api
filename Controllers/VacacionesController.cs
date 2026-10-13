@@ -154,6 +154,91 @@ namespace swacv_api.Controllers
             return Ok(resultado);
         }
 
+        [HttpPatch("{idVacacion}/estatus")]
+        public IActionResult ActualizarEstatusVacacion(
+            int idVacacion,
+            [FromBody] ActualizarEstatusVacacionDto dto)
+        {
+            // Estados permitidos dentro del sistema
+            string[] estadosPermitidos =
+            {
+                "Calendarizado",
+                "Planificado",
+                "Autorizado",
+                "Tomado"
+            };
+
+            // Validar que se haya enviado un estado
+            if (string.IsNullOrWhiteSpace(dto.Estatus))
+            {
+                return BadRequest(new
+                {
+                    mensaje = "El estatus es obligatorio."
+                });
+            }
+
+            // Buscar el estado permitido ignorando mayúsculas/minúsculas
+            var nuevoEstatus = estadosPermitidos
+                .FirstOrDefault(
+                    estado =>
+                        estado.Equals(
+                            dto.Estatus.Trim(),
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                );
+
+            // Validar que el estado enviado sea válido
+            if (nuevoEstatus == null)
+            {
+                return BadRequest(new
+                {
+                    mensaje = "El estatus enviado no es válido."
+                });
+            }
+
+            // Buscar la vacación
+            var vacacion = _context.Vacaciones
+                .FirstOrDefault(
+                    v => v.IdVacacion == idVacacion
+                );
+
+            if (vacacion == null)
+            {
+                return NotFound(new
+                {
+                    mensaje = "La vacación no fue encontrada."
+                });
+            }
+
+            // Una vacación con estatus Tomado
+            // ya no puede cambiar de estado
+            if (
+                vacacion.Estatus.Equals(
+                    "Tomado",
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+            {
+                return Conflict(new
+                {
+                    mensaje =
+                        "Una vacación con estatus Tomado no puede cambiar de estado."
+                });
+            }
+
+            // Actualizar estado
+            vacacion.Estatus = nuevoEstatus;
+
+            _context.SaveChanges();
+
+            return Ok(new
+            {
+                mensaje = "Estatus actualizado correctamente.",
+                idVacacion = vacacion.IdVacacion,
+                estatus = vacacion.Estatus
+            });
+        }
+
         [HttpPost]
         public IActionResult CrearVacacion(
             [FromBody] Vacaciones dto)
