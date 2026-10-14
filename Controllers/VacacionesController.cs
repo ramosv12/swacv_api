@@ -239,6 +239,36 @@ namespace swacv_api.Controllers
             });
         }
 
+        [HttpDelete("{idVacacion}")]
+        public IActionResult EliminarVacacion(int idVacacion)
+        {
+            // Buscar la vacación
+            var vacacion = _context.Vacaciones
+                .FirstOrDefault(
+                    v => v.IdVacacion == idVacacion
+                );
+
+            // Validar que exista
+            if (vacacion == null)
+            {
+                return NotFound(new
+                {
+                    mensaje = "La vacación no fue encontrada."
+                });
+            }
+
+            // Eliminar registro
+            _context.Vacaciones.Remove(vacacion);
+
+            _context.SaveChanges();
+
+            return Ok(new
+            {
+                mensaje = "Vacación eliminada correctamente.",
+                idVacacion = idVacacion
+            });
+        }
+
         [HttpPost]
         public IActionResult CrearVacacion(
             [FromBody] Vacaciones dto)
