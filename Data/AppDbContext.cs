@@ -12,14 +12,20 @@ namespace swacv_api.Data
         public DbSet<Empleado> Empleados { get; set; }
         public DbSet<Vacaciones> Vacaciones { get; set; }
         public DbSet<Lider> Lideres { get; set; }
+        public DbSet<CatalogoVacacionesAntiguedad> CatalogoVacacionesAntiguedad { get; set; }
 
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Empleado>().ToTable("empleado");
             modelBuilder.Entity<Usuario>().ToTable("usuario");
             modelBuilder.Entity<Equipo>().ToTable("equipo");
             modelBuilder.Entity<Lider>().ToTable("lider");
+
+            modelBuilder.Entity<CatalogoVacacionesAntiguedad>()
+                .ToTable("catalogo_vacaciones_antiguedad");
         }
     }
 }
