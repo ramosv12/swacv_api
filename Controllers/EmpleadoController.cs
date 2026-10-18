@@ -138,6 +138,95 @@ namespace swacv_api.Controllers
             return Ok(resultado);
         }
 
+        [HttpPatch("{idEmpleado}/control-rh")]
+        public IActionResult ActualizarControlRh(
+            int idEmpleado,
+            [FromBody] ActualizarEmpleadoRhDto dto
+        )
+        {
+            var empleado = _context.Empleados
+                .FirstOrDefault(
+                    e => e.IdEmpleado == idEmpleado
+                );
+
+            if (empleado == null)
+            {
+                return NotFound(new
+                {
+                    mensaje = "El empleado no fue encontrado."
+                });
+            }
+
+
+            if (
+                dto.DiasVacacionesDisponibles.HasValue &&
+                dto.DiasVacacionesDisponibles.Value < 0
+            )
+            {
+                return BadRequest(new
+                {
+                    mensaje =
+                        "Los días de vacaciones disponibles no pueden ser negativos."
+                });
+            }
+
+
+            if (
+                !dto.AltaIMSS.HasValue &&
+                !dto.DiasVacacionesDisponibles.HasValue &&
+                !dto.VencimientoDiasVacaciones.HasValue
+            )
+            {
+                return BadRequest(new
+                {
+                    mensaje =
+                        "Debe enviar al menos un dato para actualizar."
+                });
+            }
+
+
+            if (dto.AltaIMSS.HasValue)
+            {
+                empleado.AltaIMSS =
+                    dto.AltaIMSS.Value.Date;
+            }
+
+
+            if (dto.DiasVacacionesDisponibles.HasValue)
+            {
+                empleado.DiasVacacionesDisponibles =
+                    dto.DiasVacacionesDisponibles.Value;
+            }
+
+
+            if (dto.VencimientoDiasVacaciones.HasValue)
+            {
+                empleado.VencimientoDiasVacaciones =
+                    dto.VencimientoDiasVacaciones.Value.Date;
+            }
+
+
+            _context.SaveChanges();
+
+
+            return Ok(new
+            {
+                mensaje =
+                    "Datos del empleado actualizados correctamente.",
+
+                idEmpleado =
+                    empleado.IdEmpleado,
+
+                altaIMSS =
+                    empleado.AltaIMSS,
+
+                diasVacacionesDisponibles =
+                    empleado.DiasVacacionesDisponibles,
+
+                vencimientoDiasVacaciones =
+                    empleado.VencimientoDiasVacaciones
+            });
+        }
 
         private int CalcularAntiguedadAnios(
             DateTime? altaIMSS
