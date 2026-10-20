@@ -19,10 +19,10 @@ namespace swacv_api.Models
         [Column("diasvacacionesdisponibles")]
         public int DiasVacacionesDisponibles { get; set; }
 
-        [Column("altaimss")]
+        [Column("altaimss", TypeName = "date")]
         public DateTime? AltaIMSS { get; set; }
 
-        [Column("vencimientodiasvacaciones")]
+        [Column("vencimientodiasvacaciones", TypeName = "date")]
         public DateTime? VencimientoDiasVacaciones { get; set; }
 
         [ForeignKey("IdUsuario")]
